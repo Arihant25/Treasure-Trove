@@ -6,11 +6,72 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Mail, Phone, Calendar, Lock, Pencil, Star, BadgeCheck } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { AlertCircle, Mail, Phone, Calendar, Lock, Pencil, Star, BadgeCheck } from "lucide-react";
+
+const ProfileSkeleton = () => {
+    return (
+        <div className="container mx-auto p-6 max-w-6xl">
+            <div className="grid gap-6 md:grid-cols-3">
+                {/* Profile Header Skeleton */}
+                <div className="col-span-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
+                    <div className="flex flex-row items-center gap-6">
+                        <Skeleton className="h-24 w-24 rounded-full bg-gray-300" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-8 w-48 bg-gray-200" />
+                            <Skeleton className="h-4 w-24 bg-gray-200" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Left Column - Personal Info Skeleton */}
+                <div className="space-y-6">
+                    <div className="border rounded-lg p-6 space-y-6">
+                        <Skeleton className="h-6 w-40 bg-gray-200" />
+                        <div className="space-y-4">
+                            <Skeleton className="h-4 w-full bg-gray-200" />
+                            <Skeleton className="h-4 w-full bg-gray-200" />
+                            <Skeleton className="h-4 w-full bg-gray-200" />
+                        </div>
+                    </div>
+                    <div className="border rounded-lg p-6">
+                        <Skeleton className="h-6 w-40 mb-4 bg-gray-200" />
+                        <Skeleton className="h-10 w-full bg-gray-200" />
+                    </div>
+                </div>
+
+                {/* Right Column - Reviews Skeleton */}
+                <div className="md:col-span-2 border rounded-lg p-6">
+                    <Skeleton className="h-6 w-32 mb-2 bg-gray-200" />
+                    <Skeleton className="h-4 w-48 mb-6 bg-gray-200" />
+                    <div className="space-y-6">
+                        {[1, 2, 3].map((_, index) => (
+                            <div key={index} className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <Skeleton className="h-10 w-10 rounded-full bg-gray-200" />
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-4 w-32 bg-gray-200" />
+                                        <Skeleton className="h-3 w-24 bg-gray-200" />
+                                    </div>
+                                </div>
+                                <Skeleton className="h-16 w-full bg-gray-200" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -44,6 +105,9 @@ const UserProfile = () => {
                 return;
             }
 
+            // Add artificial delay
+            await new Promise(resolve => setTimeout(resolve, import.meta.env.VITE_FAKE_LOADING_TIME));
+
             const [userResponse, reviewsResponse] = await Promise.all([
                 fetch(`${backendURL}/api/auth/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -64,8 +128,8 @@ const UserProfile = () => {
             setReviews(reviewsData);
             setNewValues(prev => ({
                 ...prev,
-                age: userData.age,
-                contactNumber: userData.contactNumber
+                age: userData?.age,
+                contactNumber: userData?.contactNumber
             }));
         } catch (err) {
             setError(err.message);
@@ -146,18 +210,22 @@ const UserProfile = () => {
     };
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+        return <ProfileSkeleton />;
     }
 
     if (!user) {
-        return <div className="flex justify-center items-center h-screen">User not found</div>;
+        navigate('/404');
+        return null;
     }
 
     const renderStars = (rating) => {
         return [...Array(5)].map((_, index) => (
             <Star
                 key={index}
-                className={`h-4 w-4 ${index < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                className={`h-4 w-4 transition-all duration-200 hover:scale-110 hover:rotate-12 ${index < Math.floor(rating)
+                        ? 'text-yellow-400 fill-yellow-400 hover:text-yellow-300 hover:fill-yellow-300'
+                        : 'text-gray-300 hover:text-gray-400'
+                    }`}
             />
         ));
     };
@@ -179,11 +247,11 @@ const UserProfile = () => {
 
             <div className="grid gap-6 md:grid-cols-3">
                 {/* Profile Header Card */}
-                <Card className="col-span-3 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <Card className="col-span-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
                     <CardHeader className="flex flex-row items-center gap-6">
                         <Avatar className="h-24 w-24 border-2 border-white shadow-lg">
                             <AvatarImage src="/avatar-placeholder.jpg" />
-                            <AvatarFallback className="text-lg">{user.fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            <AvatarFallback className="text-4xl">{user.fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col gap-2">
                             <CardTitle className="text-3xl font-bold">{user.fullName}</CardTitle>
@@ -207,11 +275,17 @@ const UserProfile = () => {
                                     <div className="flex items-center gap-2">
                                         <Mail className="h-4 w-4 text-gray-500" />
                                         <span className="text-sm">{user.email}</span>
-                                        {user.isCAS || (
-                                            <div className="relative group">
-                                                <BadgeCheck className="h-4 w-4 text-gray-500 " />
-                                                <span className="absolute bottom-full w-16 left-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2">Verified with IIIT</span>
-                                            </div>
+                                        {user.isCAS && (
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <BadgeCheck className="h-4 w-4 text-gray-500" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Verified with IIIT</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         )}
                                     </div>
                                 </div>
@@ -242,14 +316,21 @@ const UserProfile = () => {
                                             ) : (
                                                 <div className="flex items-center gap-2">
                                                     <span>{user.age} {user.age === 1 ? 'year' : 'years'} old</span>
-                                                    <div
-                                                        className="cursor-pointer inline-flex items-center justify-center relative group"
-                                                        onClick={() => setIsEditing(prev => ({ ...prev, age: true }))}
-                                                    >
-                                                        <Pencil className="h-4 w-4 text-gray-500" />
-                                                        <span className="absolute bottom-full left-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transform -translate-x-1/2">Edit</span>
-                                                    </div>
-
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <div
+                                                                    className="cursor-pointer"
+                                                                    onClick={() => setIsEditing(prev => ({ ...prev, age: true }))}
+                                                                >
+                                                                    <Pencil className="h-4 w-4 text-gray-500" />
+                                                                </div>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Edit Age</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                 </div>
                                             )}
                                         </span>
@@ -281,14 +362,21 @@ const UserProfile = () => {
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm">{user.contactNumber}</span>
-                                                <div
-                                                    className="cursor-pointer inline-flex items-center justify-center relative group"
-                                                    onClick={() => setIsEditing(prev => ({ ...prev, contactNumber: true }))}
-                                                >
-                                                    <Pencil className="h-4 w-4 text-gray-500" />
-                                                    <span className="absolute bottom-full left-1/2 mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transform -translate-x-1/2">Edit</span>
-                                                </div>
-
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div
+                                                                className="cursor-pointer"
+                                                                onClick={() => setIsEditing(prev => ({ ...prev, contactNumber: true }))}
+                                                            >
+                                                                <Pencil className="h-4 w-4 text-gray-500" />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Edit Contact Number</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
                                             </div>
                                         )}
                                     </div>
@@ -302,7 +390,15 @@ const UserProfile = () => {
                             <CardTitle className="text-xl">Security</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Dialog open={isEditing.password} onOpenChange={(open) => setIsEditing(prev => ({ ...prev, password: open }))}>
+                            <Dialog
+                                open={isEditing.password}
+                                onOpenChange={(open) => {
+                                    setIsEditing(prev => ({ ...prev, password: open }));
+                                    if (!open) {
+                                        setError('');
+                                    }
+                                }}
+                            >
                                 <DialogTrigger asChild>
                                     <Button variant="outline" className="w-full">
                                         <Lock className="h-4 w-4 mr-2" />
@@ -312,6 +408,9 @@ const UserProfile = () => {
                                 <DialogContent>
                                     <DialogHeader>
                                         <DialogTitle>Change Password</DialogTitle>
+                                        {error && (
+                                            <p className="text-sm text-red-500 mt-2">{error}</p>
+                                        )}
                                     </DialogHeader>
                                     <div className="space-y-4 py-4">
                                         <div className="space-y-2">
@@ -320,6 +419,7 @@ const UserProfile = () => {
                                                 type="password"
                                                 value={newValues.currentPassword}
                                                 onChange={(e) => setNewValues(prev => ({ ...prev, currentPassword: e.target.value }))}
+                                                required
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -328,6 +428,7 @@ const UserProfile = () => {
                                                 type="password"
                                                 value={newValues.newPassword}
                                                 onChange={(e) => setNewValues(prev => ({ ...prev, newPassword: e.target.value }))}
+                                                required
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -336,6 +437,7 @@ const UserProfile = () => {
                                                 type="password"
                                                 value={newValues.confirmPassword}
                                                 onChange={(e) => setNewValues(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                                required
                                             />
                                         </div>
                                         <Button className="w-full" onClick={handlePasswordUpdate}>
@@ -352,7 +454,7 @@ const UserProfile = () => {
                 <Card className="md:col-span-2">
                     <CardHeader>
                         <CardTitle className="text-xl">Reviews</CardTitle>
-                        <CardDescription>What others are saying</CardDescription>
+                        <CardDescription>What others are saying about you.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ScrollArea className="h-[600px] pr-4">
@@ -382,9 +484,6 @@ const UserProfile = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Badge variant="secondary">
-                                                {review.serviceType}
-                                            </Badge>
                                         </div>
                                         <p className="text-sm text-gray-600 pl-10">
                                             {review.comment}
@@ -396,7 +495,7 @@ const UserProfile = () => {
                                 ))}
                                 {reviews.length === 0 && (
                                     <div className="text-center py-8 text-gray-500">
-                                        <p>No reviews yet</p>
+                                        <p>No reviews yet, try selling some stuff on the high seas first!</p>
                                     </div>
                                 )}
                             </div>

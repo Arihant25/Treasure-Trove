@@ -3,6 +3,9 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const reviewRoutes = require('./routes/reviews');
+const itemRoutes = require('./routes/items');
+const cartRoutes = require('./routes/cart');
+const orderRoutes = require('./routes/orders');
 
 // Load environment variables
 require('dotenv').config();
@@ -21,6 +24,9 @@ app.use(express.json());
 app.get('/', (req, res) => res.send('Treasure Trove backend is running'));
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/items', itemRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

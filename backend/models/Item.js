@@ -13,6 +13,9 @@ const itemSchema = new Schema({
     description: {
         type: String
     },
+    image: {
+        type: String
+    },
     category: {
         type: String
     },

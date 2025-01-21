@@ -53,10 +53,10 @@ const RegisterPage = () => {
 
             if (response.ok) {
                 setIsSubmitted(true);
-                // Wait 1 second before redirecting
+                // Wait 0.5 second before redirecting
                 setTimeout(() => {
                     window.location.href = "/login"
-                }, 1000);
+                }, 500);
 
             } else {
                 const errorData = await response.json();
