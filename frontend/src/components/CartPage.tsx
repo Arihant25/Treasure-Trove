@@ -41,6 +41,7 @@ import {
     ArrowRight,
     ShoppingBag
 } from 'lucide-react';
+import CartPageSkeleton from './skeletons/CartPageSkeleton';
 
 const CartPage = () => {
     const navigate = useNavigate();
@@ -63,6 +64,9 @@ const CartPage = () => {
                 navigate('/login');
                 return;
             }
+
+            // Artificial delay to show skeleton loader
+            await new Promise((resolve) => setTimeout(resolve, import.meta.env.VITE_FAKE_LOADING_TIME));
 
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
             const response = await fetch(`${backendUrl}/api/cart`, {
@@ -158,14 +162,7 @@ const CartPage = () => {
     };
 
     if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto" />
-                    <div className="h-4 w-24 bg-gray-200 rounded mx-auto" />
-                </div>
-            </div>
-        );
+        return <CartPageSkeleton />;
     }
 
     if (cartItems.length === 0) {
@@ -282,7 +279,7 @@ const CartPage = () => {
                                             <div>
                                                 <p className="font-medium">{item.name}</p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    Sold by: {item.sellerId.fullName}
+                                                    Merchant: {item.sellerId.fullName}
                                                 </p>
                                             </div>
                                         </div>

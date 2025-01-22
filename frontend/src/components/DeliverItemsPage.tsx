@@ -13,8 +13,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Package, PackageCheck, User, Phone } from 'lucide-react';
+import { Fish, PackageCheck, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import DeliveryPageSkeleton from './skeletons/DeliveryPageSkeleton';
 
 const DeliverItemsPage = () => {
     const { toast } = useToast();
@@ -36,6 +37,9 @@ const DeliverItemsPage = () => {
 
     const fetchPendingDeliveries = async () => {
         try {
+            // Add artificial delay
+            await new Promise(resolve => setTimeout(resolve, import.meta.env.VITE_FAKE_LOADING_TIME));
+
             const token = localStorage.getItem('token');
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
             const response = await fetch(`${backendUrl}/api/orders/pending-deliveries`, {
@@ -106,14 +110,7 @@ const DeliverItemsPage = () => {
     };
 
     if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto" />
-                    <div className="h-4 w-24 bg-gray-200 rounded mx-auto" />
-                </div>
-            </div>
-        );
+        return <DeliveryPageSkeleton />;
     }
 
     return (
@@ -126,7 +123,7 @@ const DeliverItemsPage = () => {
                     </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Package className="h-5 w-5" />
+                    <Fish className="h-5 w-5" />
                     <span className="font-medium">{pendingDeliveries.length} pending</span>
                 </div>
             </div>
@@ -200,7 +197,7 @@ const DeliverItemsPage = () => {
                 {pendingDeliveries.length === 0 && (
                     <Card>
                         <CardContent className="p-6 text-center">
-                            <Package className="h-12 w-12 mx-auto text-muted-foreground" />
+                            <Fish className="h-12 w-12 mx-auto text-muted-foreground" />
                             <h3 className="mt-4 text-lg font-medium">No Pending Deliveries</h3>
                             <p className="text-muted-foreground">
                                 You don't have any pending orders to deliver at the moment.

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/toaster"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import ItemPageSkeleton from './skeletons/ItemPageSkeleton';
 
 import {
     ShoppingCart,
@@ -35,6 +36,10 @@ const ItemPage = () => {
     useEffect(() => {
         const fetchItemDetails = async () => {
             try {
+                // Simulate loading delay
+                const delay = parseInt(import.meta.env.VITE_FAKE_LOADING_TIME);
+                await new Promise(resolve => setTimeout(resolve, delay));
+
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const response = await fetch(`${backendUrl}/api/items/${id}`);
                 const data = await response.json();
@@ -97,12 +102,7 @@ const ItemPage = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto" />
-                    <div className="h-4 w-24 bg-gray-200 rounded mx-auto" />
-                </div>
-            </div>
+            <ItemPageSkeleton />
         );
     }
 
@@ -140,9 +140,11 @@ const ItemPage = () => {
                 <div className="space-y-8">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Badge variant="secondary" className="text-sm">
-                                {item.category}
-                            </Badge>
+                            {item?.category ? (
+                                <Badge variant="secondary" className="text-sm">
+                                    {item?.category}
+                                </Badge>
+                            ) : <p />} 
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -198,7 +200,7 @@ const ItemPage = () => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
                             <Store className="h-5 w-5 text-muted-foreground" />
-                            <span>Sold by: {item.sellerId.fullName}</span>
+                            <span>Merchant: {item.sellerId.fullName}</span>
                         </div>
                         <div className="flex items-center gap-4">
                             <Clock className="h-5 w-5 text-muted-foreground" />

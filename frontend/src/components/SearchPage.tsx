@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Search, PackageSearch } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import ItemCard from '@/components/ItemCard';
+import ItemCardSkeletonGrid from './skeletons/ItemCardSkeletonGrid';
 
 const categories = [
     'Electronics',
@@ -29,11 +30,17 @@ const SearchPage = () => {
     const fetchItems = async () => {
         try {
             setLoading(true);
+
             const token = localStorage.getItem('token');
             if (!token) {
                 navigate('/login');
                 return;
             }
+
+            // Simulate loading delay
+            const delay = parseInt(import.meta.env.VITE_FAKE_LOADING_TIME);
+            await new Promise(resolve => setTimeout(resolve, delay));
+
             const queryParams = new URLSearchParams();
 
             if (searchQuery) {
@@ -44,9 +51,13 @@ const SearchPage = () => {
                 queryParams.append('categories', selectedCategories.join(','));
             }
 
-            queryParams.append('minPrice', 0);
-            queryParams.append('maxPrice', maxPrice);
-
+            queryParams.append('minPrice', "0");
+            if (maxPrice == 50000) {
+                queryParams.append('maxPrice', '');
+            }
+            else {
+                queryParams.append('maxPrice', maxPrice.toString());
+            }
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
             const response = await fetch(`${backendUrl}/api/items?${queryParams}`);
@@ -129,7 +140,7 @@ const SearchPage = () => {
                                 />
                                 <div className="flex justify-between mt-2 text-sm text-gray-600">
                                     <span>{formatPrice(0)}</span>
-                                    <span>{formatPrice(maxPrice)}</span>
+                                    <span>{maxPrice == 50000 ? formatPrice(maxPrice) + "+" : maxPrice}</span>
                                 </div>
                             </div>
 
@@ -153,12 +164,7 @@ const SearchPage = () => {
 
                     {/* Items Grid with Modern Empty State */}
                     {loading ? (
-                        <div className="flex items-center justify-center min-h-[400px]">
-                            <div className="animate-pulse space-y-3">
-                                <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto" />
-                                <div className="h-4 w-24 bg-gray-200 rounded mx-auto" />
-                            </div>
-                        </div>
+                        <ItemCardSkeletonGrid />
                     ) : items.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {items.map(item => (

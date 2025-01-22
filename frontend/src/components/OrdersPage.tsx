@@ -14,6 +14,7 @@ import {
     RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import OrdersSkeleton from './skeletons/OrdersSkeleton';
 
 function generateOTP() {
     // Generate a 6-digit OTP
@@ -51,6 +52,7 @@ const OrdersPage = () => {
         if (!token) {
             navigate('/login');
         }
+
         fetchOrders();
     }, []);
 
@@ -58,6 +60,10 @@ const OrdersPage = () => {
         try {
             const token = localStorage.getItem('token');
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+            // Add artificial delay
+            await new Promise(resolve => setTimeout(resolve, import.meta.env.VITE_FAKE_LOADING_TIME));
+
 
             // Fetch pending orders
             const pendingResponse = await fetch(`${backendUrl}/api/orders/my-orders`, {
@@ -211,16 +217,9 @@ const OrdersPage = () => {
     const completedSales = salesHistory;
 
     if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
-                <div className="animate-pulse space-y-4">
-                    <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto" />
-                    <div className="h-4 w-24 bg-gray-200 rounded mx-auto" />
-                </div>
-            </div>
-        );
+        return <OrdersSkeleton />;
     }
-    
+
     const OrderCard = ({ order, isSale }) => (
         <Card className="overflow-hidden">
             <CardHeader className="bg-gray-50/50">
@@ -246,7 +245,7 @@ const OrdersPage = () => {
                     {order.status === 'pending' && (
                         <OrderOTPSection order={order} />
                     )}
-    
+
                     <div className="space-y-4">
                         {order.items.map((item) => (
                             <div
@@ -257,8 +256,8 @@ const OrdersPage = () => {
                                     <div className="font-medium">{item.name}</div>
                                     <div className="text-sm text-muted-foreground">
                                         {isSale
-                                            ? `Purchased by: ${order.buyerId?.fullName || 'Unknown Buyer'}`
-                                            : `Sold by: ${item.sellerId?.fullName || 'Unknown Seller'}`}
+                                            ? `Buyer: ${order.buyerId?.fullName || 'Unknown Buyer'}`
+                                            : `Merchant: ${item.sellerId?.fullName || 'Unknown Seller'}`}
                                     </div>
                                 </div>
                                 <div className="font-medium">
@@ -267,9 +266,9 @@ const OrdersPage = () => {
                             </div>
                         ))}
                     </div>
-    
+
                     <Separator />
-    
+
                     <div className="flex items-center justify-between">
                         <span className="font-medium">Total Amount</span>
                         <span className="text-lg font-bold">
@@ -310,7 +309,7 @@ const OrdersPage = () => {
                 <TabsContent value="pending" className="space-y-6">
                     {pendingOrders.length > 0 ? (
                         pendingOrders.map(order => (
-                            <OrderCard key={order._id} order={order} isSale={true}/>
+                            <OrderCard key={order._id} order={order} isSale={true} />
                         ))
                     ) : (
                         <div className="text-center text-muted-foreground">
@@ -331,7 +330,7 @@ const OrdersPage = () => {
                     ) : null}
                     {completedPurchases.length > 0 ? (
                         completedPurchases.map(order => (
-                            <OrderCard key={order._id} order={order} isSale={false}/>
+                            <OrderCard key={order._id} order={order} isSale={false} />
                         ))
                     ) : (
                         <div className="text-center text-muted-foreground">
@@ -350,7 +349,7 @@ const OrdersPage = () => {
                     </div>) : null}
                     {completedSales.length > 0 ? (
                         completedSales.map(order => (
-                            <OrderCard key={order._id} order={order} isSale={true}/>
+                            <OrderCard key={order._id} order={order} isSale={true} />
                         ))
                     ) : (
                         <div className="text-center text-muted-foreground">
