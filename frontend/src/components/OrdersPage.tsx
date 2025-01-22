@@ -14,6 +14,7 @@ import {
     RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ReviewDialog from './ReviewDialog';
 import OrdersSkeleton from './skeletons/OrdersSkeleton';
 
 function generateOTP() {
@@ -257,7 +258,19 @@ const OrdersPage = () => {
                                     <div className="text-sm text-muted-foreground">
                                         {isSale
                                             ? `Buyer: ${order.buyerId?.fullName || 'Unknown Buyer'}`
-                                            : `Merchant: ${item.sellerId?.fullName || 'Unknown Seller'}`}
+                                            : (
+                                                <div className="flex items-center space-x-2">
+                                                    <span>Merchant: {item.sellerId?.fullName || 'Unknown Seller'}</span>
+                                                    {!isSale && order.status === 'completed' && (
+                                                        <ReviewDialog
+                                                            sellerId={item.sellerId?._id}
+                                                            sellerName={item.sellerId?.fullName}
+                                                            orderId={order._id}
+                                                            onReviewSubmitted={fetchOrders}
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
                                     </div>
                                 </div>
                                 <div className="font-medium">

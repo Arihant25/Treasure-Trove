@@ -169,8 +169,8 @@ const UserProfile = () => {
             <Star
                 key={index}
                 className={`h-4 w-4 transition-all duration-200 hover:scale-110 hover:rotate-12 ${index < Math.floor(rating)
-                        ? 'text-yellow-400 fill-yellow-400 hover:text-yellow-300 hover:fill-yellow-300'
-                        : 'text-gray-300 hover:text-gray-400'
+                    ? 'text-yellow-400 fill-yellow-400 hover:text-yellow-300 hover:fill-yellow-300'
+                    : 'text-gray-300 hover:text-gray-400'
                     }`}
             />
         ));
@@ -197,13 +197,13 @@ const UserProfile = () => {
                     <CardHeader className="flex flex-row items-center gap-6">
                         <Avatar className="h-24 w-24 border-2 border-white shadow-lg">
                             <AvatarImage src="/avatar-placeholder.jpg" />
-                            <AvatarFallback className="text-4xl">{user.fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                            <AvatarFallback className="text-4xl">{user?.fullName?.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col gap-2">
-                            <CardTitle className="text-3xl font-bold">{user.fullName}</CardTitle>
+                            <CardTitle className="text-3xl font-bold">{user?.fullName}</CardTitle>
                             <div className="flex items-center gap-2">
-                                <div className="flex">{renderStars(user.rating)}</div>
-                                <span className="text-sm text-gray-600">({user.rating.toFixed(1)})</span>
+                                <div className="flex">{renderStars(user?.rating)}</div>
+                                <span className="text-sm text-gray-600">({user?.rating.toFixed(1)})</span>
                             </div>
                         </div>
                     </CardHeader>
@@ -220,8 +220,8 @@ const UserProfile = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Mail className="h-4 w-4 text-gray-500" />
-                                        <span className="text-sm">{user.email}</span>
-                                        {user.isCAS && (
+                                        <span className="text-sm">{user?.email}</span>
+                                        {user?.isCAS && (
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger>
@@ -254,14 +254,14 @@ const UserProfile = () => {
                                                     <Button size="sm" variant="outline"
                                                         onClick={() => {
                                                             setIsEditing(prev => ({ ...prev, age: false }));
-                                                            setNewValues(prev => ({ ...prev, age: user.age }));
+                                                            setNewValues(prev => ({ ...prev, age: user?.age }));
                                                         }}>
                                                         Cancel
                                                     </Button>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-2">
-                                                    <span>{user.age} {user.age === 1 ? 'year' : 'years'} old</span>
+                                                    <span>{user?.age} {user?.age === 1 ? 'year' : 'years'} old</span>
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -300,14 +300,14 @@ const UserProfile = () => {
                                                 <Button size="sm" variant="outline"
                                                     onClick={() => {
                                                         setIsEditing(prev => ({ ...prev, contactNumber: false }));
-                                                        setNewValues(prev => ({ ...prev, contactNumber: user.contactNumber }));
+                                                        setNewValues(prev => ({ ...prev, contactNumber: user?.contactNumber }));
                                                     }}>
                                                     Cancel
                                                 </Button>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm">{user.contactNumber}</span>
+                                                <span className="text-sm">{user?.contactNumber}</span>
                                                 <TooltipProvider>
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
@@ -400,28 +400,28 @@ const UserProfile = () => {
                 <Card className="md:col-span-2">
                     <CardHeader>
                         <CardTitle className="text-xl">Reviews</CardTitle>
-                        <CardDescription>What others are saying about you.</CardDescription>
+                        <CardDescription>Reviews you've received from other sailors.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ScrollArea className="h-[600px] pr-4">
                             <div className="space-y-6">
                                 {reviews.map((review, index) => (
-                                    <div key={index} className="space-y-2">
+                                    <div key={index} className="space-y-2 py-4 px-4 border rounded-lg">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-8 w-8">
                                                     <AvatarFallback>
-                                                        {review.userId.fullName.split(' ').map(n => n[0]).join('')}
+                                                        {review?.user?.fullName?.split(' ').map(n => n[0]).join('')}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <p className="text-sm font-medium">{review.userId.fullName}</p>
+                                                    <p className="text-sm font-medium">{review?.user?.fullName}</p>
                                                     <div className="flex items-center gap-2">
                                                         <div className="flex">
-                                                            {renderStars(review.rating)}
+                                                            {renderStars(review?.rating)}
                                                         </div>
                                                         <span className="text-sm text-gray-500">
-                                                            {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                            {new Date(review?.createdAt).toLocaleDateString('en-US', {
                                                                 month: 'long',
                                                                 day: 'numeric',
                                                                 year: 'numeric'
@@ -432,11 +432,8 @@ const UserProfile = () => {
                                             </div>
                                         </div>
                                         <p className="text-sm text-gray-600 pl-10">
-                                            {review.comment}
+                                            {review?.comment}
                                         </p>
-                                        {index < reviews.length - 1 && (
-                                            <Separator className="mt-4" />
-                                        )}
                                     </div>
                                 ))}
                                 {reviews.length === 0 && (

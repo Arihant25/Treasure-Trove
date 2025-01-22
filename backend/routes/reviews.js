@@ -4,11 +4,11 @@ const Review = require('../models/Review');
 const User = require('../models/User');
 const auth = require('../middleware/authMiddleware');
 
-// Get reviews for a specific user
+// Get reviews received by a specific user
 router.get('/user', auth, async (req, res) => {
     try {
-        const reviews = await Review.find({ user: req.user.id })
-            .populate('user', 'fullName')  // Populate user details
+        const reviews = await Review.find({ targetUser: req.user.id })
+            .populate('user', 'fullName')  // Populate reviewer details
             .sort({ createdAt: -1 });      // Sort by newest first
 
         res.json(reviews);
@@ -29,7 +29,7 @@ router.post('/:userId', auth, async (req, res) => {
         }
 
         const review = new Review({
-            user: req.user.id,  // reviewer's ID
+            user: req.user.id,              // reviewer's ID
             targetUser: req.params.userId,  // reviewed user's ID
             rating,
             comment,
