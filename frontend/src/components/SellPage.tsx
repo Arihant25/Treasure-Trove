@@ -26,7 +26,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Package, DollarSign, Tag } from 'lucide-react';
+import { Fish, IndianRupee, Tag, Link, ListCollapse } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const SellPage = () => {
@@ -121,7 +121,7 @@ const SellPage = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="flex items-center gap-2">
-                                    <Package className="w-4 h-4" />
+                                    <Fish className="w-4 h-4" />
                                     Item Name
                                 </Label>
                                 <Input
@@ -137,7 +137,7 @@ const SellPage = () => {
 
                             <div className="space-y-2">
                                 <Label htmlFor="price" className="flex items-center gap-2">
-                                    <DollarSign className="w-4 h-4" />
+                                    <IndianRupee className="w-4 h-4" />
                                     Price
                                 </Label>
                                 <Input
@@ -178,7 +178,10 @@ const SellPage = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="image">Image URL</Label>
+                                <Label htmlFor="image" className="flex items-center gap-2">
+                                    <Link className="w-4 h-4" />
+                                    Image URL
+                                </Label>
                                 <Input
                                     id="image"
                                     name="image"
@@ -190,7 +193,10 @@ const SellPage = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description" className="flex items-center gap-2">
+                                    <ListCollapse className="w-4 h-4" />
+                                    Description
+                                </Label>
                                 <Textarea
                                     id="description"
                                     name="description"
