@@ -58,7 +58,7 @@ PORT=5000
 
 5. Create a .env file in the frontend directory:
 ```env
-REACT_APP_API_URL=http://localhost:5000
+VITE_BACKEND_URL=http://localhost:5000
 ```
 
 ### Running the Application
@@ -110,27 +110,6 @@ The application will be available at `http://localhost:3000`
 - Protected API routes
 - Session management
 - Input validation and sanitization
-
-## 📁 Project Structure
-
-```
-treasure-trove/
-├── backend/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   └── server.js
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.js
-│   └── package.json
-└── README.md
-```
 
 ## 👥 User Roles
 

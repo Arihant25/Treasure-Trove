@@ -6,13 +6,14 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import NotFoundPage from './components/NotFoundPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/UserProfilePage';
 import SearchPage from './components/SearchPage';
 import SellPage from './components/SellPage';
 import ItemPage from './components/ItemPage';
 import CartPage from './components/CartPage';
 import DeliverItemsPage from './components/DeliverItemsPage';
 import OrdersPage from './components/OrdersPage';
+import SupportPage from './components/SupportPage';
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/deliver" element={<DeliverItemsPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/support" element={<SupportPage />} />
       </Routes>
       <Footer />
     </Router>

@@ -3,14 +3,31 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const protect = require('../middleware/authMiddleware');
+const axios = require('axios');
 
 const router = express.Router();
 
+// Verify reCAPTCHA token
+const verifyRecaptcha = async (token) => {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const response = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`
+    );
+    return response.data;
+};
+
 // Register user
 router.post('/register', async (req, res) => {
-    const { fullName, email, age, contactNumber, password } = req.body;
+    const { fullName, email, age, contactNumber, password, challengeCompleted } = req.body;
+    const recaptchaResult = await verifyRecaptcha(req.body.recaptchaToken);
+    
+    // If reCAPTCHA score is low and challenge not completed, require additional verification
+    if (!recaptchaResult.success || (recaptchaResult.score < 0.5 && !challengeCompleted)) {
+        return res.status(400).json({ message: 'reCAPTCHA verification failed' });
+    }
+    
     try {
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password with a salt round of 10
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
             fullName,
             email,
