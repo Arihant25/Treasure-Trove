@@ -93,7 +93,6 @@ const ReviewDialog = ({ sellerId, sellerName, onReviewSubmitted, orderId }) => {
                 onReviewSubmitted();
             }
         } catch (error) {
-            console.log(error);
             toast({
                 variant: "destructive",
                 title: "Error",

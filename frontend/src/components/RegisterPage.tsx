@@ -105,13 +105,13 @@ const RegisterPage = () => {
                 body: JSON.stringify(registerData),
             });
 
-            if (response.status === 400) {
-                const errorData = await response.json();
-                if (errorData.message === 'reCAPTCHA verification failed') {
-                    setPendingRegistrationData(registerData);
-                    setShowChallenge(true);
-                    return;
-                }
+            // Read the response JSON once and store it
+            const responseData = await response.json();
+
+            if (response.status === 400 && responseData.message === 'reCAPTCHA verification failed') {
+                setPendingRegistrationData(registerData);
+                setShowChallenge(true);
+                return;
             }
 
             if (response.ok) {
@@ -120,8 +120,7 @@ const RegisterPage = () => {
                     window.location.href = "/login"
                 }, 500);
             } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                alert(`Error: ${responseData.message}`);
             }
         } catch (err) {
             console.error('Registration failed:', err);
@@ -143,6 +142,10 @@ const RegisterPage = () => {
                 }),
             });
 
+            // Read the response JSON once
+            const responseData = await response.json();
+
+
             if (response.ok) {
                 setShowChallenge(false);
                 setIsSubmitted(true);
@@ -150,8 +153,7 @@ const RegisterPage = () => {
                     window.location.href = "/login"
                 }, 500);
             } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                alert(`Error: ${responseData.message}`);
             }
         } catch (err) {
             console.error('Registration failed:', err);
